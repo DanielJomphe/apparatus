@@ -3,7 +3,6 @@
   (:require [apparatus.config :as config]
             [apparatus.cluster :as cluster]))
 
-(defn -main [group password]
+(defn -main [& args]
   (-> (config/default)
-      (config/group group password)
       (cluster/instance)))
