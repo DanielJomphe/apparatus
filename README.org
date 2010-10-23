@@ -2,68 +2,32 @@
 #+TITLE: Apparatus: Clojure Clusters
 #+STARTUP: hidstars overview odd
 
-* Setup
-* Tests
-* Usage
-* WIP
-*** TODO Write better tests to suppport continued work
-*** TODO Add the [[http://hazelcast.googlecode.com/svn/javadoc/index.html][pure client]] (no compute / no store) interface
-*** TODO Add clojure.contrib.logging & wire up log4j for syslog & etc
-*** TODO Add documentation & figure out autodoc for clojure
-*** TODO Add support for jclouds config
-*** TODO Add support for Typica config
-*** TODO Try something like [[http://sna-projects.com/krati/][Krati]] for fast disk cache
-*** TODO Try some simple disk caching
-    ;; [com.hazelcast.core MapLoader MapStore]
-    ;; [java.io
-    ;;  File FileInputStream FileOutputStream
-    ;;  ObjectInputStream ObjectOutputStream]
-    ;; todo
-    ;; (defn disk-cache
-    ;;   "Use a local disk directory to cache"
-    ;;   ([config dir]
-    ;;      (doto config
-    ;;        ;; roll through each map/mmap/set/list/queue/topic config
-    ;;        ;; make sure each dir is present
-    ;;        (let [name-dir (File. dir name)]
-    ;;          (when-not (.exists name-dir)
-    ;;            (.mkdirs name-dir)))
-    ;;        ;; set each config to use a disk store
-    ;;        (proxy [MapLoader MapStore] []
-    ;;          (load
-    ;;           [k]
-    ;;           (with-open [is (FileInputStream. (File. name-dir k))
-    ;;                       io (ObjectInputStream. is)]
-    ;;             (.readObject io)))
-    ;;          (loadAll [ks] (map #(.load this %) ks))
-    ;;          (store
-    ;;           [k v]
-    ;;           (with-open [os (FileOutputStream. (File. name-dir k))
-    ;;                       oo (ObjectOutputStream. os)]
-    ;;             (.writeObject oo v)))
-    ;;          (storeAll [m] (doseq [[k v] m] (fn [k v] (.store this k v))))
-    ;;          (delete [k] (.delete (File. name-dir k)))
-    ;;          (deleteAll [ks] (doseq [k ks] (.delete this k))))
-    ;;        ))
-    ;;   ([config]
-    ;;      (disk-store config (File. (System/getProperty "java.io.tmpdir")))))
-*** TODO See if multimethods will work for eval
-    ;; (defmulti eval (fn [sexp & target] [(class target)]))
-    ;; (prefer-method eval [Object] [String])
-    ;; (defmethod eval [ISeq]
-    ;;   [sexp members]
-    ;;   (let [task (MultiTask. (Eval. sexp) members)]
-    ;;     (-> (executor) (.execute task))
-    ;;     task))
-    ;; (defmethod eval [Object]
-    ;;   [sexp target]
-    ;;   (let [task (DistributedTask. (Eval. sexp) target)]
-    ;;     (-> (executor) (.execute task))
-    ;;     task))
-    ;; (defmethod eval [nil]
-    ;;   [sexp]
-    ;;   (-> (executor) (.submit (Eval. sexp))))
-*** TODO Get distributed locks working
-*** TODO Get distributed transactions working
-*** TODO Add sym encryption
-*** TODO Add asym encryption
+* Build & Test apparatus
+#+BEGIN_SRC: bash
+  lein uberjar                               ;# create an uberjar
+  lein test                                  ;# run the unit tests
+#+END_SRC
+* Play with it
+#+BEGIN_SRC: bash
+  nohup java -jar apparatus*standalone.jar & ;# background node (autostarts)
+  nohup java -jar apparatus*standalone.jar & ;# background node (autostarts)
+  lein repl                                  ;# interactive node
+#+END_SRC
+* Start up the foreground node
+#+BEGIN_SRC: clojure
+  (require '[apparatus.config :as config] '[apparatus.cluster :as cluster])
+  (-> (config/default) (cluster/instance))
+#+END_SRC
+* Make your cluster do work
+#+BEGIN_SRC: clojure
+  (-> (cluster/eval-any (+ 1 1)) (.get))
+#+END_SRC
+* Store some data in your cluster
+#+BEGIN_SRC: clojure
+  (-> (cluster/map "helloworld") (.put "mah" "bukkit"))
+  (-> (cluster/map "helloworld") (.get "mah"))
+#+END_SRC
+* Add apparatus lib to your project
+#+BEGIN_SRC: clojure
+  (defproject myproject "1.2.3" :dependencies [[apparatus "0.1.0-SNAPSHOT"]])
+#+END_SRC
