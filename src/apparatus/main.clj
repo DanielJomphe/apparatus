@@ -6,3 +6,4 @@
 (defn -main [& args]
   (-> (config/default)
       (cluster/instance)))
+
