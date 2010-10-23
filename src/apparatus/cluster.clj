@@ -1,7 +1,7 @@
 (ns apparatus.cluster
   (:refer-clojure :exclude [eval list set map])
   (:require [apparatus.config :as config])
-  (:import [com.hazelcast.core Hazelcast DistributedTask]
+  (:import [com.hazelcast.core Hazelcast DistributedTask MultiTask]
            [apparatus Eval]))
 
 (defn instance
@@ -24,12 +24,22 @@
   (-> (Hazelcast/getCluster) (.getMembers)))
 
 (defn eval
-  "Evaluates the given sexp on a possibly remote cluster instance
-  member. The optional target argument can be either a member, a set
-  of members, or a key. Returns a subclass of FutureTask."
-  [sexp & target]
+  [sexp target]
   (let [task (DistributedTask. (Eval. sexp) target)]
-    (-> (Hazelcast/getExecutorService) (.execute task))
+    (-> (Hazelcast/getExecutorService)
+        (.execute task))
+    task))
+
+(defn eval-any
+  [sexp]
+  (-> (Hazelcast/getExecutorService)
+      (.submit (Eval. sexp))))
+
+(defn eval-every
+  [sexp nodes]
+  (let [task (MultiTask. (Eval. sexp) nodes)]
+    (-> (Hazelcast/getExecutorService)
+        (.execute task))
     task))
 
 (defn topic
