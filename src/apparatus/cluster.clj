@@ -35,7 +35,7 @@
   (-> (Hazelcast/getExecutorService)
       (.submit (Eval. sexp))))
 
-(defn eval-every
+(defn eval-each
   [sexp nodes]
   (let [task (MultiTask. (Eval. sexp) nodes)]
     (-> (Hazelcast/getExecutorService)

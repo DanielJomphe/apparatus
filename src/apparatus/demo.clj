@@ -10,7 +10,7 @@
         (sh "say" "hello world!"))))
 
 (defn peanut-butter-jelly-time! []
-  (cluster/eval-every
+  (cluster/eval-each
    '(do (println 'peanutbutterjellytime)
         (use 'clojure.contrib.shell)
         (sh "say" "it's peanut-butter-jelly time!"))
