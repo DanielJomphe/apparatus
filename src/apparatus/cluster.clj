@@ -1,5 +1,4 @@
 (ns apparatus.cluster
-  (:refer-clojure :exclude [eval list set map])
   (:import [com.hazelcast.core Hazelcast DistributedTask MultiTask]
            [apparatus Eval]))
 
@@ -41,32 +40,32 @@
         (.execute task))
     task))
 
-(defn topic
+(defn get-topic
   "Returns a distributed topic for the given key."
   [k]
   (Hazelcast/getTopic k))
 
-(defn queue
+(defn get-queue
   "Returns a distributed queue for the given key."
   [k]
   (Hazelcast/getQueue k))
 
-(defn map
+(defn get-map
   "Returns a distributed map for the given key."
   [k]
   (Hazelcast/getMap k))
 
-(defn mmap
+(defn get-mmap
   "Returns a distributed multi-map for the given key."
   [k]
   (Hazelcast/getMultiMap k))
 
-(defn list
+(defn get-list
   "Returns a distributed list for the given key."
   [k]
   (Hazelcast/getList k))
 
-(defn set
+(defn get-set
   "Returns a distributed set for the given key."
   [k]
   (Hazelcast/getSet k))

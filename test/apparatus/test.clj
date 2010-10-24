@@ -23,7 +23,7 @@
            (many
             #(let [uuid (uuid)
                    sexp `(* ~(rand) ~(rand-int 100))]
-               (-> (cluster/set "test") (.add uuid))
+               (-> (cluster/get-set "test") (.add uuid))
                (is (= (eval sexp)
                       (-> (cluster/eval-on sexp uuid) (.get))))))))
         (testing "on a member by reference"
@@ -52,17 +52,17 @@
       (testing "with a distributed mmap")
       (testing "with a distributed set"
         (let [colors ["red" "green" "blue"]
-              set (cluster/set "colors")]
+              set (cluster/get-set "colors")]
           (doseq [color colors] (-> set (.add color)))
           (testing "should only ever contain one of each entry"
             (doseq [color colors] (-> set (.add color)))
-            (is (= (count colors) (count (cluster/set "colors")))))
+            (is (= (count colors) (count (cluster/get-set "colors")))))
           (testing "should be uniform across all members"
             (every?
              (fn [result] (is (= (count colors) result)))
              (-> (cluster/eval-each
                   `(do (require '[apparatus.cluster :as cluster])
-                       (count (cluster/set "colors")))
+                       (count (cluster/get-set "colors")))
                   (cluster/members))
                  (.get))))))
       (testing "with a distributed list")
