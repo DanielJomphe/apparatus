@@ -1,6 +1,5 @@
 (ns apparatus.cluster
   (:refer-clojure :exclude [eval list set map])
-  (:require [apparatus.config :as config])
   (:import [com.hazelcast.core Hazelcast DistributedTask MultiTask]
            [apparatus Eval]))
 
