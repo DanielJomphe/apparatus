@@ -23,7 +23,7 @@
   []
   (-> (Hazelcast/getCluster) (.getMembers)))
 
-(defn eval
+(defn eval-on
   [sexp target]
   (let [task (DistributedTask. (Eval. sexp) target)]
     (-> (Hazelcast/getExecutorService)

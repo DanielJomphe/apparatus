@@ -26,13 +26,13 @@
                    sexp `(* ~(rand) ~(rand-int 100))]
                (-> (cluster/set "test") (.add uuid))
                (is (= (eval sexp)
-                      (-> (cluster/eval sexp uuid) (.get))))))))
+                      (-> (cluster/eval-on sexp uuid) (.get))))))))
         (testing "on a member by reference"
           (doall
            (many
             #(let [sexp `(* ~(rand) ~(rand-int 100))]
                (is (= (eval sexp)
-                      (-> (cluster/eval sexp (first (cluster/members)))
+                      (-> (cluster/eval-on sexp (first (cluster/members)))
                           (.get))))))))
         (testing "on some of the members"
           (doall

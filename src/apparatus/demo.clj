@@ -21,7 +21,7 @@
     (-> (cluster/map "demo")
         (.put (str x) (str (UUID/randomUUID)))))
   (doseq [x (range 256)]
-    (.get (cluster/eval
-           `(do (require '[apparatus.cluster :as cluster])
-                (-> (cluster/map "demo") (.get (str ~x)) println))
-           (str x)))))
+    (cluster/eval-on
+     `(do (require '[apparatus.cluster :as cluster])
+          (-> (cluster/map "demo") (.get (str ~x)) println))
+     (str x))))
