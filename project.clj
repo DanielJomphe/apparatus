@@ -5,4 +5,4 @@
                  [com.hazelcast/hazelcast "1.9"]]
   :dev-dependencies [[swank-clojure "1.2.1"]]
   :namespaces [apparatus.eval]
-  :main apparatus.main)
+  :main apparatus.demo)
