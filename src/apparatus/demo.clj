@@ -1,27 +1,23 @@
 (ns apparatus.demo
-  (:require [apparatus.config :as config]
-            [apparatus.cluster :as cluster])
+  (:gen-class)
+  (:use [apparatus config cluster])
   (:import [java.util UUID]))
 
-(defn hello-world []
-  (cluster/eval-any
-   '(do (println 'hello)
-        (use 'clojure.contrib.shell)
-        (sh "say" "hello world!"))))
+(defn demo-hello-on-one-node []
+  (eval-any `(println 'hello)))
 
-(defn peanut-butter-jelly-time! []
-  (cluster/eval-each
-   '(do (println 'peanutbutterjellytime)
-        (use 'clojure.contrib.shell)
-        (sh "say" "it's peanut-butter-jelly time!"))
-   (cluster/members)))
+(defn demo-each-node-doin-stuff []
+  (eval-each `(println 'ohai) (members)))
 
-(defn distributed-data-locality-demo []
+(defn demo-data-locality-aware-eval []
   (doseq [x (range 256)]
-    (-> (cluster/map "demo")
+    (-> (get-map "demo")
         (.put (str x) (str (UUID/randomUUID)))))
   (doseq [x (range 256)]
-    (cluster/eval-on
-     `(do (require '[apparatus.cluster :as cluster])
-          (-> (cluster/map "demo") (.get (str ~x)) println))
+    (eval-on
+     `(do (use 'apparatus.cluster)
+          (-> (get-map "demo") (.get (str ~x)) println))
      (str x))))
+
+(defn -main [& args]
+  (instance (config)))
