@@ -36,17 +36,17 @@
           (doall
            (many
             #(let [sexp `(* ~(rand) ~(rand-int 100))]
-               (every? (fn [result] (is (= (eval sexp) result)))
-                       (-> (eval-each sexp (set (drop 2 (members))))
-                           (.get)))))))
+               (is (every? (fn [result] (= (eval sexp) result))
+                           (-> (eval-each sexp (set (drop 2 (members))))
+                               (.get))))))))
         (testing "on all members"
           (doall
            (many
             #(let [sexp `(* ~(rand) ~(rand-int 100))]
-               (every?
-                (fn [result] (is (= (eval sexp) result)))
-                (-> (eval-each sexp (members))
-                    (.get))))))))
+               (is (every?
+                    (fn [result] (= (eval sexp) result))
+                    (-> (eval-each sexp (members))
+                        (.get)))))))))
       (testing "with a distributed map")
       (testing "with a distributed mmap")
       (testing "with a distributed set"
@@ -57,11 +57,11 @@
             (doseq [color colors] (-> set (.add color)))
             (is (= (count colors) (count (get-set "colors")))))
           (testing "should be uniform across all members"
-            (every?
-             (fn [result] (is (= (count colors) result)))
-             (-> (eval-each '(count (apparatus.cluster/get-set "colors"))
-                            (members))
-                 (.get))))))
+            (is (every?
+                 (fn [result] (= (count colors) result))
+                 (-> (eval-each '(count (apparatus.cluster/get-set "colors"))
+                                (members))
+                     (.get)))))))
       (testing "with a distributed list")
       (testing "with a distributed queue")
       (testing "with a distributed topic")
