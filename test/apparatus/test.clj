@@ -1,7 +1,7 @@
 (ns apparatus.test
-  (:use [clojure.test])
-  (:require [apparatus.config :as config]
-            [apparatus.cluster :as cluster])
+  (:use [apparatus.config]
+        [clojure.test])
+  (:require [apparatus.cluster :as cluster])
   (:import [java.util UUID]))
 
 (defn many [f] (take 4 (repeatedly f)))
@@ -10,8 +10,7 @@
 
 (deftest apparatus
   (testing "apparatus"
-    (let [config (-> (config/default)
-                     (config/group (uuid) (uuid)))
+    (let [config (-> (config) (config-group (uuid) (uuid)))
           instances (doall (many #(cluster/instance config)))]
       (testing "should be able to eval an sexp"
         (testing "on randomly selected member"

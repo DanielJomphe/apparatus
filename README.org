@@ -15,8 +15,9 @@
 #+END_SRC
 * Start up the foreground node
 #+BEGIN_SRC: clojure
-  (require '[apparatus.config :as config] '[apparatus.cluster :as cluster])
-  (-> (config/default) (cluster/instance))
+  (require '[apparatus.config :as config]
+           '[apparatus.cluster :as cluster])
+  (cluster/instance (config/config))
 #+END_SRC
 * Make your cluster do work
 #+BEGIN_SRC: clojure
