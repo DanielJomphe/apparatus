@@ -20,7 +20,7 @@
 #+END_SRC
 * Make your cluster do work
 #+BEGIN_SRC: clojure
-  (-> (cluster/eval-any (+ 1 1)) (.get))
+  (-> (cluster/eval-any '(+ 1 1)) (.get))
 #+END_SRC
 * Store some data in your cluster
 #+BEGIN_SRC: clojure
