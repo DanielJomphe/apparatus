@@ -1,4 +1,4 @@
-(defproject apparatus "0.1.2-SNAPSHOT"
+(defproject apparatus "0.1.3-SNAPSHOT"
   :description "Apparatus: Clojure Cluster"
   :dependencies [[org.clojure/clojure "1.2.0"]
                  [com.hazelcast/hazelcast "1.9"]]
