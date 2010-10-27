@@ -15,21 +15,31 @@
 #+END_SRC
 * Start up the foreground node
 #+BEGIN_SRC: clojure
-  (require '[apparatus.config :as config]
-           '[apparatus.cluster :as cluster])
-  (cluster/instance (config/config))
+  (use '[apparatus config cluster)
+  (instance (config))
 #+END_SRC
 * Make your cluster do work
 #+BEGIN_SRC: clojure
-  (-> (cluster/eval-any '(+ 1 1)) (.get))
+  (-> (eval-any '(+ 1 1)) (.get))
 #+END_SRC
 * Store some data in your cluster
 #+BEGIN_SRC: clojure
-  (-> (cluster/map "helloworld") (.put "mah" "bukkit"))
-  (-> (cluster/map "helloworld") (.get "mah"))
+  (-> (get-map "helloworld") (.put "mah" "bukkit"))
+  (-> (get-map "helloworld") (.get "mah"))
+#+END_SRC
+* Have the remote node, that owns the data locally, do something with it
+#+BEGIN_SRC: clojure
+  (-> (eval-on
+       '(do (use 'apparatus.cluster)
+            (-> (get-map "helloworld")
+                (.get "mah")
+                (str " was found!")))
+       "mah")
+       (.get)
+       (println)))
 #+END_SRC
 * Add apparatus lib to your project
 #+BEGIN_SRC: clojure
-  (defproject myproject "1.2.3" :dependencies [[apparatus "0.1.0-SNAPSHOT"]])
+  (defproject myproject "1.2.3" :dependencies [[apparatus "0.1.2"]])
 #+END_SRC
 * Read more about [[http://www.hazelcast.com/documentation.jsp][Hazelcast]]
