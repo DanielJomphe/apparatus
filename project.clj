@@ -5,3 +5,4 @@
   :dev-dependencies [[swank-clojure "1.2.1"]]
   :aot [apparatus.eval]
   :main apparatus.demo)
+                 [org.linkedin/krati "0.3.7"]
