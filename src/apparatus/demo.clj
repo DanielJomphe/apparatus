@@ -1,6 +1,4 @@
 (ns apparatus.demo
-  (:gen-class)
-  (:use [apparatus config cluster])
   (:import [java.util UUID]))
 
 (defn demo-hello-on-one-node []
@@ -18,6 +16,3 @@
      `(do (use 'apparatus.cluster)
           (-> (get-map "demo") (.get (str ~x)) println))
      (str x))))
-
-(defn -main [& args]
-  (instance (config)))

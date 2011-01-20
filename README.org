@@ -40,6 +40,6 @@
 #+END_SRC
 * Add apparatus lib to your project
 #+BEGIN_SRC: clojure
-  (defproject myproject "1.2.3" :dependencies [[apparatus "0.1.2"]])
+  (defproject myproject "1.2.3" :dependencies [[apparatus "0.2.0-SNAPSHOT"]])
 #+END_SRC
 * Read more about [[http://www.hazelcast.com/documentation.jsp][Hazelcast]]
