@@ -16,27 +16,70 @@
   (require [pallet.core :as core]
            [pallet.resource :as resource]
            [pallet.resource.package :as package]
+           [pallet.resource.remote-file :as remote-file]
            [pallet.resource.exec-script :as exec]
+           [pallet.enlive :as enlive]
            [pallet.crate.automated-admin-user :as admin]
-           [pallet.crate.java :as java]))
+           [pallet.crate.java :as java]
+           [net.cgrand.enlive-html :as xml]))
+
+(defn bootstrap
+  [request & options]
+  (-> request
+      (java/java :sun)
+      (package/package "jsvc")
+      ;; TODO download apparatus jars or git clone
+      ))
+
+(defn conf-xml
+  [node-type options]
+  ;; TODO dump an xml config file mapping all the nodes
+  ;;   with enlive using the tomcat crate example
+  ;;   use nodes-in-tag in the request map
+  ;;   use computer/private-ip against the node
+  (enlive/xml-emit
+   (enlive/xml-template
+    "crate/apparatus/hazelcast.xml" node-type
+    [options]
+    ;; setting attribute
+    [:multicast] (xml/set-attr :enabled "false")
+    [:tcp-ip] (xml/set-attr :enabled "true")
+    ;; setting text content
+    ;; [:disableSignup] (xml/content "true")
+    ;; creating child nodes
+    ;; [:permission] (xml/clone-for
+    ;;                [permission [x y]]
+    ;;                (xml/content "lol"))
+    )
+   options))
+
+(defn configure
+  [request & options]
+  (-> request
+      ;; TODO create a user for the service or use a low-priv user
+      (remote-file/remote-file
+       "/tmp/hazelcast.xml"
+       ;; TODO pass in list of private ip addrs in the same tag group
+       :content (conf-xml (:node-type request) options)
+       :owner "ubuntu"
+       :group "ubuntu"
+       :mode "0664")
+      ;; TODO jsvc config
+      ;;   TODO utilize 75% ram for node type
+      ;;   TODO keep it running & monitor it's health - monit?
+      ))
 
 (core/defnode apparatus
   "Define an node"
   {:image-id "us-east-1/ami-08f40561" ;; Ubuntu Maverick 64
-   :min-cores 2                       ;; 4-core CPU min
-   :min-ram (* 16 1024)               ;; 32 GB Ram  min
+   :min-cores 2                       ;; 2-core CPU min
+   :min-ram (* 4 1024)                ;; 4 GB Ram min
    :inbound-ports [22]}
-  :bootstrap
-  (resource/phase
-   (package/package-manager :update)
-   (exec/exec-checked-script "Upgrading" (apt-get "upgrade -y"))
-   (admin/automated-admin-user))
-  :configure
-  (resource/phase
-   (java/java :sun)
-   (package/package "jsvc")
-   ;; TODO download apparatus jars or git clone
-   ;; TODO dump a clj config file mapping all the nodes
-   ;; TODO fire it up utilizing all the ram possible
-   ;; TODO keep it running & monitor it's health - monit?
-   ))
+  :bootstrap (resource/phase
+              (package/package-manager :update)
+              (exec/exec-checked-script "Upgrading"
+                                        (apt-get "upgrade -y"))
+              (admin/automated-admin-user)
+              (apparatus.pallet/bootstrap))
+  :configure (resource/phase
+              (apparatus.pallet/configure)))
