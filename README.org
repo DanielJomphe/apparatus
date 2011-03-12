@@ -15,7 +15,7 @@
 #+END_SRC
 * Start up the foreground node
 #+BEGIN_SRC: clojure
-  (use '[apparatus config cluster)
+  (use '[apparatus config cluster])
   (instance (config))
 #+END_SRC
 * Make your cluster do work
@@ -36,7 +36,7 @@
                 (str " was found!")))
        "mah")
        (.get)
-       (println)))
+       (println))
 #+END_SRC
 * Add apparatus lib to your project
 #+BEGIN_SRC: clojure
