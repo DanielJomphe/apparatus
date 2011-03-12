@@ -30,13 +30,13 @@
 * Have the remote node, that owns the data locally, do something with it
 #+BEGIN_SRC: clojure
   (-> (eval-on
-       '(do (use 'apparatus.cluster)
-            (-> (get-map "helloworld")
-                (.get "mah")
-                (str " was found!")))
-       "mah")
-       (.get)
-       (println))
+       '(do (use 'apparatus.cluster)         ;# remote work definition
+         (-> (get-map "helloworld")
+             (.get "mah")
+             (str " was found!")))
+       "mah")                                ;# node that owns "mah" 
+      (.get)
+      (println))
 #+END_SRC
 * Add apparatus lib to your project
 #+BEGIN_SRC: clojure
