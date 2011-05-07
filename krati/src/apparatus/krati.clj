@@ -41,6 +41,7 @@
 (defn config-krati [config map-key map-dir]
   (let [store (DynamicDataStore. map-dir (WriteBufferSegmentFactory. 8))
         mstore (proxy [MapStore] []
+                 (loadAllKeys [] (set (iterator-seq (.keyIterator store))))
                  (load [k] (bytes->obj (.get store (obj->bytes k))))
                  (loadAll [ks] (reduce #(assoc %1 %2 (.load this %2)) {} ks))
                  (store [k v] (.put store (obj->bytes k) (obj->bytes v)))
@@ -48,9 +49,10 @@
                  (delete [k] (.delete store (obj->bytes k)))
                  (deleteAll [ks] (doseq [k ks] (.delete this k))))]
     (doto config
-      (.setMapConfigs (assoc (into {} (.getMapConfigs config))
-                        map-key (doto (MapConfig.)
-                                  (.setMapStoreConfig
-                                   (doto (MapStoreConfig.)
-                                     (.setEnabled true)
-                                     (.setImplementation mstore)))))))))
+      (.addMapConfig
+       (doto (MapConfig.)
+         (.setName map-key)
+         (.setMapStoreConfig
+          (doto (MapStoreConfig.)
+            (.setEnabled true)
+            (.setImplementation mstore))))))))
