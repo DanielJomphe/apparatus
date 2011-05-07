@@ -13,6 +13,7 @@
 ;; permissions and limitations under the License.
 
 (ns apparatus.pallet
+  (:gen-class)
   (:use [pallet core compute phase]
         [pallet.resource package]
         [pallet.crate automated-admin-user java]))
