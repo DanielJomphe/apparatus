@@ -18,21 +18,23 @@
         [pallet.resource package]
         [pallet.crate automated-admin-user java]))
 
-(def admin
-  (server-spec :phases {:bootstrap (phase-fn (automated-admin-user))}))
+(def base
+  (server-spec
+   :phases {:bootstrap (phase-fn (automated-admin-user))
+            :configure (phase-fn (package-manager :update)
+                                 (package-manager :upgrade))}))
 
 (def jvm
-  (server-spec :extends admin
-               :phases {:configure (phase-fn (java :sun))}))
-
-(def jsvc
-  (server-spec :extends jvm
-               :phases {:configure (phase-fn (package "jsvc"))}))
+  (server-spec
+   :extends base
+   :phases {:configure (phase-fn (java :sun)
+                                 (package "jsvc"))}))
 
 (def node
   (node-spec
-   :image {:image-id "us-east-1/ami-e2af508b"}
-   :hardware {:smallest true}
+   :image {:os-family :ubuntu :os-version-matches "11.04" :os-64-bit true
+           :image-id "us-east-1/ami-68ad5201"}
+   :hardware {:min-cores 2 :min-ram 4000}
    :network {:inbound-ports [22]}))
 
 (defn apparatus [count]
@@ -44,9 +46,7 @@
 (defn -main [& args]
   (converge (apparatus 5) :compute (service)))
 
-(comment
-  ;; converge
+(comment ;; testing @ ec2
   (converge (apparatus 1) :compute (service))
-  ;; destroy
   (converge (apparatus 0) :compute (service))
   )
