@@ -19,32 +19,30 @@
         [pallet.crate automated-admin-user java]))
 
 (def admin
-  (server-spec :phases {:configure (phase-fn (automated-admin-user))}))
+  (server-spec :phases {:bootstrap (phase-fn (automated-admin-user))}))
 
 (def jvm
-  (server-spec :phases {:configure (phase-fn (java :sun))}))
+  (server-spec :extends admin
+               :phases {:configure (phase-fn (java :sun))}))
 
 (def jsvc
-  (server-spec :extends jvm :phases {:configure (phase-fn (package "jsvc"))}))
-
-(def tmux
-  (server-spec :phases {:configure (phase-fn (package "tmux"))}))
+  (server-spec :extends jvm
+               :phases {:configure (phase-fn (package "jsvc"))}))
 
 (def node
   (node-spec
-   :image {;; :os-family :ubuntu :os-version-matches "11.04"
-           :image-id "us-east-1/ami-e2af508b" ;; or e2af508b 64 bit
-           }
-   :hardware {;; :smallest true
-              :min-cores 1 :min-ram 384
-              }
+   :image {:image-id "us-east-1/ami-e2af508b"}
+   :hardware {:smallest true}
    :network {:inbound-ports [22]}))
 
 (defn apparatus [count]
-  (group-spec "apparatus" :extends [tmux] :node-spec node :count count))
+  (group-spec
+   "apparatus"
+   :extends [jsvc]
+   :node-spec node :count count))
 
 (defn -main [& args]
-  (converge (apparatus 2) :compute (service)))
+  (converge (apparatus 5) :compute (service)))
 
 (comment
   ;; converge
