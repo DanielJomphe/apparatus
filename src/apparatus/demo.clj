@@ -13,6 +13,7 @@
 ;; permissions and limitations under the License.
 
 (ns apparatus.demo
+  (:use [apparatus cluster config])
   (:import [java.util UUID]))
 
 (defn demo-hello-on-one-node []
