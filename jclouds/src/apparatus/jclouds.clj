@@ -14,7 +14,7 @@
 
 (ns apparatus.jclouds
   (:import [java.net InetAddress]
-           [com.hazelcast.config Config Join TcpIpConfig]
+           [com.hazelcast.config Config Join TcpIpConfig MulticastConfig]
            [com.hazelcast.nio Address])
   (:use [org.jclouds.compute :as jclouds]))
 
