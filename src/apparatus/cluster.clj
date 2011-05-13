@@ -25,6 +25,11 @@
     (catch IllegalStateException e
       (Hazelcast/newHazelcastInstance config))))
 
+(defn restart
+  "Restarts all the instance(s) in this JVM"
+  []
+  (.restart (Hazelcast/getLifecycleService)))
+
 (defn shutdown
   "Shuts down the entire JVM's clustered instances."
   []
